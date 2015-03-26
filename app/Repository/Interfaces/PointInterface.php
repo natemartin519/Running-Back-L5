@@ -2,7 +2,7 @@
 
 
 interface PointInterface {
-    public function fetchLatitude();
-    public function fetchLongitude();
-    public function fetchElevation();
+    public function latitude();
+    public function longitude();
+    public function elevation();
 }

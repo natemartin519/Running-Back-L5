@@ -2,6 +2,8 @@
 
 
 interface RunInterface {
-    public function fetchAllPoints();
-    public function fetchPointById($id);
+    public function allPoints();
+    public function nextPoint();
+    public function previousPoint();
+    public function pointById($id);
 }
