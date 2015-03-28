@@ -2,6 +2,8 @@
 
 class RunControllerTest extends TestCase {
 
+    protected $run;
+
     public function testIndexShouldReturnAllRunsInJSONFormat()
     {
         $this->fail();
