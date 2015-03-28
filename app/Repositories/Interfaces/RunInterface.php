@@ -2,6 +2,7 @@
 
 
 interface RunInterface {
+    public function getPoint($id);
     public function currentPoint();
     public function allPoints();
     public function nextPoint();

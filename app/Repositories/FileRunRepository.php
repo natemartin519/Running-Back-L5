@@ -1,64 +1,73 @@
 <?php namespace App\Repositories;
 
 use App\Repositories\Interfaces\RunInterface;
+use App\Repositories\PointRepository as Point;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
+use OutOfBoundsException;
+use SoapBox\Formatter\Formatter;
 
 class FileRunRepository implements RunInterface {
 
-    protected $pointsCollection;
+    protected $pointCollection;
+    protected $position;
 
-    function __construct($fileName = null)
+    function __construct($fileName)
     {
         $file = File::get($fileName);
 
-        // TODO: Check for null file
-
-        $this->pointsCollection = $this->loadPoints($file);
+        $this->pointCollection = $this->loadPoints($file);
+        $this->position = 0;
     }
 
     private function loadPoints($file)
     {
-        $points = new Collection();
+        $pointCollection = new Collection();
 
-// TODO: Re-implement once tests are in place
-//        $xmlFormattedData = Formatter::make($file, Formatter::XML);
-//        $mapData = array_get($xmlFormattedData->toArray(), 'trk.trkseg.trkpt');
-//
-//        foreach ($mapData as $lineData)
-//        {
-//            $lon = $lineData['@attributes']['lon'];
-//            $lat = $lineData['@attributes']['lat'];
-//
-//            // TODO: New Point model
-//            $dataPoint = [
-//                'lon' => $lon,
-//                'lat' => $lat
-//            ];
-//
-//            $this->gpsDataPoints->push($dataPoint);
-//        }
+        $xmlFormattedData = Formatter::make($file, Formatter::XML);
+        $mapData = array_get($xmlFormattedData->toArray(), 'trk.trkseg.trkpt');
 
-        return $points;
+        foreach ($mapData as $lineData)
+        {
+            $lon = $lineData['@attributes']['lon'];
+            $lat = $lineData['@attributes']['lat'];
+            $ele = $lineData['ele'];
+
+            $pointCollection->push(new Point($lat, $lon, $ele));
+        }
+
+        return $pointCollection;
     }
 
     public function allPoints()
     {
-        return false;
+        return $this->pointCollection;
     }
 
     public function nextPoint()
     {
-        return false;
+        $this->position = ($this->position == $this->allPoints()->count() - 1) ? 0 : $this->position + 1;
+        return $this->currentPoint();
+    }
+
+    public function getPoint($id)
+    {
+        $this->position = $id - 1;
+        $point = $this->currentPoint();
+
+        if (is_null($point)) throw new OutOfBoundsException('{$id} was not found in collection', $id);
+
+        return $point;
     }
 
     public function previousPoint()
     {
-        return false;
+        $this->position = ($this->position == 0) ? $this->allPoints()->count() - 1 : $this->position - 1;
+        return $this->currentPoint();
     }
 
     public function currentPoint()
     {
-        return false;
+        return $this->pointCollection->get($this->position);
     }
 }
