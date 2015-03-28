@@ -2,42 +2,44 @@
 
 use App\Repositories\Interfaces\RunInterface;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\File;
 
 class FileRunRepository implements RunInterface {
 
-    protected $gpsPoints;
+    protected $pointsCollection;
 
-    function __construct($fileName)
+    function __construct($fileName = null)
     {
-
         $file = File::get($fileName);
 
         // TODO: Check for null file
 
-        $this->$gpsPoints = $this->loadPoints($file);
+        $this->pointsCollection = $this->loadPoints($file);
     }
 
-    private function loadPoints(File $file)
+    private function loadPoints($file)
     {
-        $gpsPoints = new Collection();
-        $xmlFormattedData = Formatter::make($file, Formatter::XML);
-        $mapData = array_get($xmlFormattedData->toArray(), 'trk.trkseg.trkpt');
+        $points = new Collection();
 
-        foreach ($mapData as $lineData)
-        {
-            $lon = $lineData['@attributes']['lon'];
-            $lat = $lineData['@attributes']['lat'];
+// TODO: Re-implement once tests are in place
+//        $xmlFormattedData = Formatter::make($file, Formatter::XML);
+//        $mapData = array_get($xmlFormattedData->toArray(), 'trk.trkseg.trkpt');
+//
+//        foreach ($mapData as $lineData)
+//        {
+//            $lon = $lineData['@attributes']['lon'];
+//            $lat = $lineData['@attributes']['lat'];
+//
+//            // TODO: New Point model
+//            $dataPoint = [
+//                'lon' => $lon,
+//                'lat' => $lat
+//            ];
+//
+//            $this->gpsDataPoints->push($dataPoint);
+//        }
 
-            // TODO: New Point model
-            $dataPoint = [
-                'lon' => $lon,
-                'lat' => $lat
-            ];
-
-            $this->gpsDataPoints->push($dataPoint);
-        }
-
-        return $gpsPoints;
+        return $points;
     }
 
     public function allPoints()
@@ -55,7 +57,7 @@ class FileRunRepository implements RunInterface {
         return false;
     }
 
-    public function pointById($id)
+    public function currentPoint()
     {
         return false;
     }

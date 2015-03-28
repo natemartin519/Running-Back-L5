@@ -2,8 +2,8 @@
 
 
 interface RunInterface {
+    public function currentPoint();
     public function allPoints();
     public function nextPoint();
     public function previousPoint();
-    public function pointById($id);
 }
