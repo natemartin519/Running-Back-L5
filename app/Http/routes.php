@@ -19,3 +19,5 @@ Route::controllers([
 	'auth' => 'Auth\AuthController',
 	'password' => 'Auth\PasswordController',
 ]);
+
+Route::resource('api/v1/run', 'RunController', ['only' => ['index', 'show', 'store', 'destroy']]);
